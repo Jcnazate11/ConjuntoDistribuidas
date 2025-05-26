@@ -1,4 +1,4 @@
 package riesgoCrediticio.modelo;
 
-public class modelo {
+public class ClienteJuridico {
 }
