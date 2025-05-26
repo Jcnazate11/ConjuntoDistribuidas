@@ -1,4 +1,4 @@
 package ec.edu.espe.riesgocrediticio.modelo;
 
-public class modelo {
+public class PersonaJuridica {
 }
