@@ -1,12 +1,10 @@
 package ec.edu.espe.riesgocrediticio.modelo;
 
-
 import jakarta.persistence.*;
-import java.math.BigDecimal;
-
-
 import lombok.Getter;
 import lombok.Setter;
+import java.math.BigDecimal;
+
 @Getter
 @Setter
 @Entity
@@ -16,11 +14,9 @@ public class Deuda {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "monto",nullable = false)
+    @Column(nullable = false)
     private BigDecimal monto;
 
-    @Column(name = "plazoMeses",nullable = false)
+    @Column(nullable = false)
     private int plazoMeses;
-
-    // Getters y Setters
 }

@@ -1,4 +1,10 @@
 package ec.edu.espe.riesgocrediticio.repository;
 
-public class HistorialEvaluacionRepository {
+import ec.edu.espe.riesgocrediticio.modelo.HistorialEvaluacion;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.List;
+
+public interface HistorialEvaluacionRepository extends JpaRepository<HistorialEvaluacion, Long> {
+    List<HistorialEvaluacion> findByClienteNombre(String clienteNombre);
 }
