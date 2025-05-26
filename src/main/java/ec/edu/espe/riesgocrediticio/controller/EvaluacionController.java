@@ -110,4 +110,21 @@ public class EvaluacionController {
         h.setFechaConsulta(LocalDateTime.now());
         historialRepo.save(h);
     }
+    @GetMapping("/historial/dto")
+    public ResponseEntity<List<HistorialDTO>> consultarHistorialDTOs() {
+        List<HistorialDTO> dtos = historialRepo.findAll()
+            .stream()
+            .map(h -> {
+                HistorialDTO dto = new HistorialDTO();
+                dto.setId(h.getId());
+                dto.setClienteNombre(h.getClienteNombre());
+                dto.setNivelRiesgo(h.getNivelRiesgo());
+                dto.setAprobado(h.isAprobado());
+                return dto;
+            })
+            .collect(Collectors.toList());
+
+        return ResponseEntity.ok(dtos);
+    }
+
 }

@@ -6,6 +6,11 @@ import ec.edu.espe.riesgocrediticio.modelo.PersonaNatural;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.AbstractMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Stream;
+
 @Component
 public class EvaluadorFactory {
 
@@ -30,9 +35,14 @@ public class EvaluadorFactory {
             if (montoSolicitado > ingreso * 0.3) puntaje -= 15;
         }
 
-        if (puntaje >= 80) return bajo;
-        else if (puntaje >= 60) return medio;
-        else return alto;
-    }
-}
+        return Stream.<Map.Entry<Boolean, EvaluadorRiesgo>>of(
+            new AbstractMap.SimpleEntry<>(puntaje >= 80, bajo),
+            new AbstractMap.SimpleEntry<>(puntaje >= 60, medio)
+        )
+        .filter(Map.Entry::getKey)
+        .map(Map.Entry::getValue)
+        .findFirst()
+        .orElse(alto);
 
+        }
+}
