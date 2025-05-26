@@ -23,7 +23,30 @@ public class EvaluacionController {
     private HistorialEvaluacionRepository historialRepo;
 
     @PostMapping("/natural")
-    public ResponseEntity<ResultadoDTO> evaluarPersonaNatural(@RequestBody PersonaNaturalDTO dto) {
+    public ResponseEntity<?> evaluarPersonaNatural(@RequestBody PersonaNaturalDTO dto) {
+        // Validaciones manuales
+        if (dto.getNombre() == null || dto.getNombre().isBlank()) {
+            return ResponseEntity.badRequest().body("El nombre es obligatorio.");
+        }
+        if (dto.getEdad() < 18) {
+            return ResponseEntity.badRequest().body("La edad debe ser mayor o igual a 18.");
+        }
+        if (dto.getIngresoMensual() == null || dto.getIngresoMensual().doubleValue() <= 0) {
+            return ResponseEntity.badRequest().body("El ingreso mensual debe ser mayor a 0.");
+        }
+        if (dto.getMontoSolicitado() == null || dto.getMontoSolicitado().doubleValue() <= 0) {
+            return ResponseEntity.badRequest().body("El monto solicitado debe ser mayor a 0.");
+        }
+        if (dto.getDeudasActuales() == null || dto.getDeudasActuales().isEmpty()) {
+            return ResponseEntity.badRequest().body("Debe registrar al menos una deuda.");
+        }
+        boolean deudaInvalida = dto.getDeudasActuales().stream()
+            .anyMatch(d -> d.getMonto() == null || d.getMonto().doubleValue() <= 0 || d.getPlazoMeses() <= 0);
+        if (deudaInvalida) {
+            return ResponseEntity.badRequest().body("Todas las deudas deben tener monto y plazo válidos.");
+        }
+
+        // Lógica principal
         PersonaNatural cliente = convertir(dto);
         EvaluadorRiesgo evaluador = evaluadorFactory.obtenerEvaluador(cliente);
         ResultadoEvaluacion resultado = evaluador.evaluar(cliente);
@@ -31,8 +54,33 @@ public class EvaluacionController {
         return ResponseEntity.ok(convertirResultado(resultado));
     }
 
+
     @PostMapping("/juridica")
-    public ResponseEntity<ResultadoDTO> evaluarPersonaJuridica(@RequestBody PersonaJuridicaDTO dto) {
+    public ResponseEntity<?> evaluarPersonaJuridica(@RequestBody PersonaJuridicaDTO dto) {
+        if (dto.getNombre() == null || dto.getNombre().isBlank()) {
+            return ResponseEntity.badRequest().body("El nombre es obligatorio.");
+        }
+        if (dto.getIngresoAnual() == null || dto.getIngresoAnual().doubleValue() <= 0) {
+            return ResponseEntity.badRequest().body("El ingreso anual debe ser mayor a 0.");
+        }
+        if (dto.getEmpleados() <= 0) {
+            return ResponseEntity.badRequest().body("Debe tener al menos un empleado.");
+        }
+        if (dto.getAntiguedadAnios() < 1) {
+            return ResponseEntity.badRequest().body("La antigüedad debe ser de al menos 1 año.");
+        }
+        if (dto.getMontoSolicitado() == null || dto.getMontoSolicitado().doubleValue() <= 0) {
+            return ResponseEntity.badRequest().body("El monto solicitado debe ser mayor a 0.");
+        }
+        if (dto.getDeudasActuales() == null || dto.getDeudasActuales().isEmpty()) {
+            return ResponseEntity.badRequest().body("Debe registrar al menos una deuda.");
+        }
+        boolean deudaInvalida = dto.getDeudasActuales().stream()
+            .anyMatch(d -> d.getMonto() == null || d.getMonto().doubleValue() <= 0 || d.getPlazoMeses() <= 0);
+        if (deudaInvalida) {
+            return ResponseEntity.badRequest().body("Todas las deudas deben tener monto y plazo válidos.");
+        }
+
         PersonaJuridica cliente = convertir(dto);
         EvaluadorRiesgo evaluador = evaluadorFactory.obtenerEvaluador(cliente);
         ResultadoEvaluacion resultado = evaluador.evaluar(cliente);
