@@ -40,10 +40,13 @@ public class EvaluacionController {
         return ResponseEntity.ok(convertirResultado(resultado));
     }
 
-    @GetMapping("/historial/{nombre}")
-    public ResponseEntity<List<HistorialEvaluacion>> consultarHistorial(@PathVariable String nombre) {
-        return ResponseEntity.ok(historialRepo.findByClienteNombre(nombre));
+    @GetMapping("/historial/{id}")
+    public ResponseEntity<HistorialEvaluacion> consultarHistorial(@PathVariable Long id) {
+        return historialRepo.findById(id)
+            .map(ResponseEntity::ok)
+            .orElse(ResponseEntity.notFound().build());
     }
+
 
     // 🛠 Conversores
 
